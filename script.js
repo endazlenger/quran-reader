@@ -63,18 +63,18 @@ function goToPage() {
 }
 
 // Önceki sayfa butonuna tıklanınca çağrılan fonksiyon
-function nextPage() {
-    if (currentPage < totalPages) {
-        currentPage++;
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
         renderPage(currentPage);
         localStorage.setItem("currentPage", currentPage); // Sayfa numarasını sakla
     }
 }
 
 // Sonraki sayfa butonuna tıklanınca çağrılan fonksiyon
-function prevPage() {
-    if (currentPage > 1) {
-        currentPage--;
+function nextPage() {
+    if (currentPage < totalPages) {
+        currentPage++;
         renderPage(currentPage);
         localStorage.setItem("currentPage", currentPage); // Sayfa numarasını sakla
     }
@@ -99,8 +99,8 @@ function zoomOut() {
 }
 
 // Butonlara tıklama olaylarını ekliyoruz
-document.getElementById('prev').addEventListener('click', prevPage);
 document.getElementById('next').addEventListener('click', nextPage);
+document.getElementById('prev').addEventListener('click', prevPage);
 document.getElementById('zoom-in').addEventListener('click', zoomIn);
 document.getElementById('zoom-out').addEventListener('click', zoomOut);
 
