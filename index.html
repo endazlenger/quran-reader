@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,13 +8,21 @@
 </head>
 <body>
     <div class="controls">
-        <button id="next">Sonraki Sayfa</button>
-        <button id="zoom-out">-</button>
-        <button id="zoom-in">+</button>
-        <button id="prev">Onceki Sayfa</button>
+        <button id="prev">Önceki Sayfa</button>
+		<button id="zoom-in">Yakınlaştır</button>
+		<button id="zoom-out">Uzaklaştır</button>
+        <button id="next">Sonraki Sayfa</button>       
     </div>
+
+    <div class="page-navigation">
+        <label for="page-number">Sayfa Numarası:</label>
+        <input type="number" id="page-number" min="1" max="604" placeholder="Sayfa numarası">
+        <button id="go-to-page">Git</button>
+    </div>
+
     <canvas id="pdf-viewer"></canvas>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+    <script src="libs/pdf.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

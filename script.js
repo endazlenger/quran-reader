@@ -49,6 +49,19 @@ function renderPage(pageNum) {
     });
 }
 
+// Sayfaya gitme işlevi (Girilen sayfaya +1 eklenerek işlem yapılır)
+function goToPage() {
+    let pageNumber = parseInt(document.getElementById('page-number').value); // Kullanıcıdan sayfa numarasını al
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+        pageNumber += 1; // Girilen sayfa numarasına +1 ekleyelim
+        currentPage = pageNumber; // Sayfayı güncelle
+        renderPage(currentPage); // Yeni sayfayı render et
+        localStorage.setItem("currentPage", currentPage); // Sayfa numarasını kaydet
+    } else {
+        alert('Geçersiz sayfa numarası!'); // Hatalı sayfa numarası girildiğinde uyarı
+    }
+}
+
 // Önceki sayfa butonuna tıklanınca çağrılan fonksiyon
 function nextPage() {
     if (currentPage < totalPages) {
@@ -90,3 +103,11 @@ document.getElementById('prev').addEventListener('click', prevPage);
 document.getElementById('next').addEventListener('click', nextPage);
 document.getElementById('zoom-in').addEventListener('click', zoomIn);
 document.getElementById('zoom-out').addEventListener('click', zoomOut);
+
+// Sayfaya gitme işlevi (Girilen sayfaya +1 eklenerek işlem yapılır)
+document.getElementById('go-to-page').addEventListener('click', goToPage);
+document.getElementById('page-number').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') { // ENTER tuşuna basıldığında
+        goToPage(); // Sayfaya gitme fonksiyonunu çalıştır
+    }
+});
