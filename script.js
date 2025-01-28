@@ -14,6 +14,7 @@ const url = 'pdf/quran.pdf';
 pdfjsLib.getDocument(url).promise.then(function (pdfDoc_) {
     pdfDoc = pdfDoc_;
     renderPage(currentPage); // Başlangıçta kaldığınız sayfayı yükle
+    updatePageStatus(); // Sayfa durumunu güncelle
 });
 
 // Sayfa render fonksiyonu
@@ -47,6 +48,13 @@ function renderPage(pageNum) {
 
         page.render(renderContext);
     });
+    updatePageStatus(); // Sayfa durumu güncellensin
+}
+
+// Sayfa durumunu güncelleme (Mevcut sayfayı gösterme)
+function updatePageStatus() {
+    let prevPage = currentPage - 1; // Mevcut sayfanın 1 eksik hali
+    document.getElementById('page-status').textContent = `Şu anda ${prevPage} sayfadasınız`; // 1 eksik sayfa
 }
 
 // Sayfaya gitme işlevi (Girilen sayfaya +1 eklenerek işlem yapılır)
