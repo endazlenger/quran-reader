@@ -7,19 +7,20 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <div class="controls">
-        <button id="next">Sonraki Sayfa</button>
-        <button id="zoom-in">Yakınlaştır</button>
-        <button id="zoom-out">Uzaklaştır</button>
-        <button id="prev">Önceki Sayfa</button>
         
+        <button id="next">Sonraki Sayfa</button>
+		<button id="zoom-out">Uzaklaştır</button>
+        <button id="zoom-in">Yakınlaştır</button>
+		<button id="prev">Önceki Sayfa</button>  
     </div>
 
     <div class="page-navigation">
         <label for="page-number">Sayfa Numarası:</label>
-        <input type="number" id="page-number" min="1" max="604" placeholder="Sayfa numarası">
+        <input type="number" id="page-number" min="0" max="603" placeholder="Sayfa numarası">
         <button id="go-to-page">Git</button>
-        <span id="page-status">Şu anda 1 sayfadasınız</span> <!-- Sayfa durumu burada gösterilecek -->
+        <span id="page-status">Şu anda 0. sayfadasınız</span>
     </div>
 
     <canvas id="pdf-viewer"></canvas>

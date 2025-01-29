@@ -1,121 +1,81 @@
-// Başlangıç sayfası
-let currentPage = localStorage.getItem("currentPage") ? parseInt(localStorage.getItem("currentPage")) : 1;
-let scale = localStorage.getItem("scale") ? parseFloat(localStorage.getItem("scale")) : 1; // Zoom seviyesini kaydet
-const totalPages = 604; // Kur'an'da toplam sayfa sayısı
-let pdfDoc = null; // PDF doküman objesi
-const zoomStep = 0.2; // Zoom artırma/azaltma miktarı
-const minScale = 0.5; // Minimum zoom seviyesi
-const maxScale = 3.0; // Maksimum zoom seviyesi
-
-// PDF dosyasının yolu
+// Başlangıç ayarları
+let currentPage = localStorage.getItem("currentPage") ? parseInt(localStorage.getItem("currentPage")) : 0;
+let scale = localStorage.getItem("scale") ? parseFloat(localStorage.getItem("scale")) : 1;
+const totalPages = 604;
+const zoomStep = 0.2, minScale = 0.5, maxScale = 3.0;
+let pdfDoc = null;
 const url = 'pdf/quran.pdf';
 
-// PDF dosyasını yükleme
-pdfjsLib.getDocument(url).promise.then(function (pdfDoc_) {
-    pdfDoc = pdfDoc_;
-    renderPage(currentPage); // Başlangıçta kaldığınız sayfayı yükle
-    updatePageStatus(); // Sayfa durumunu güncelle
+// PDF'yi yükleme
+pdfjsLib.getDocument(url).promise.then(pdf => {
+    pdfDoc = pdf;
+    renderPage(currentPage);
 });
 
-// Sayfa render fonksiyonu
+// Sayfayı render etme
 function renderPage(pageNum) {
-    pdfDoc.getPage(pageNum).then(function (page) {
-        // Ölçeklendirme ve viewport ayarı
-        const viewport = page.getViewport({ scale: scale });
-
-        // Canvas elemanını ayarlama
+    pdfDoc.getPage(pageNum + 1).then(page => { // PDF.js sayfa numaralandırması 1'den başlıyor
+        const viewport = page.getViewport({ scale });
         const canvas = document.getElementById('pdf-viewer');
         const context = canvas.getContext('2d');
 
-        // Yüksek çözünürlük için canvas boyutlarını ayarla
         const outputScale = window.devicePixelRatio || 1;
         canvas.width = Math.floor(viewport.width * outputScale);
         canvas.height = Math.floor(viewport.height * outputScale);
-
         canvas.style.width = `${viewport.width}px`;
         canvas.style.height = `${viewport.height}px`;
 
-        const transform = outputScale !== 1
-            ? [outputScale, 0, 0, outputScale, 0, 0]
-            : null;
+        context.clearRect(0, 0, canvas.width, canvas.height); // Önceki sayfayı temizle
 
-        // PDF sayfasını canvas üzerine çiz
-        const renderContext = {
-            canvasContext: context,
-            viewport: viewport,
-            transform: transform
-        };
-
+        const renderContext = { canvasContext: context, viewport, transform: outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null };
         page.render(renderContext);
     });
-    updatePageStatus(); // Sayfa durumu güncellensin
+
+    updatePageStatus();
 }
 
-// Sayfa durumunu güncelleme (Mevcut sayfayı gösterme)
+// Sayfa durumunu güncelleme
 function updatePageStatus() {
-    let prevPage = currentPage - 1; // Mevcut sayfanın 1 eksik hali
-    document.getElementById('page-status').textContent = `Şu anda ${prevPage} sayfadasınız`; // 1 eksik sayfa
+    document.getElementById('page-status').textContent = `Şu anda ${currentPage}. sayfadasınız`;
+    document.getElementById('page-number').value = currentPage; // Sayfa numarasını inputa yansıt
 }
 
-// Sayfaya gitme işlevi (Girilen sayfaya +1 eklenerek işlem yapılır)
+// Sayfaya gitme
 function goToPage() {
-    let pageNumber = parseInt(document.getElementById('page-number').value); // Kullanıcıdan sayfa numarasını al
-    if (pageNumber >= 1 && pageNumber <= totalPages) {
-        pageNumber += 1; // Girilen sayfa numarasına +1 ekleyelim
-        currentPage = pageNumber; // Sayfayı güncelle
-        renderPage(currentPage); // Yeni sayfayı render et
-        localStorage.setItem("currentPage", currentPage); // Sayfa numarasını kaydet
+    let pageNumber = parseInt(document.getElementById('page-number').value);
+    if (pageNumber >= 0 && pageNumber < totalPages) {
+        currentPage = pageNumber;
+        localStorage.setItem("currentPage", currentPage);
+        renderPage(currentPage);
     } else {
-        alert('Geçersiz sayfa numarası!'); // Hatalı sayfa numarası girildiğinde uyarı
+        alert('Geçersiz sayfa numarası!');
     }
 }
 
-// Önceki sayfa butonuna tıklanınca çağrılan fonksiyon
-function prevPage() {
-    if (currentPage > 1) {
-        currentPage--;
+// Sayfa değiştirme fonksiyonları
+function changePage(direction) {
+    const newPage = currentPage + direction;
+    if (newPage >= 0 && newPage < totalPages) {
+        currentPage = newPage;
+        localStorage.setItem("currentPage", currentPage);
         renderPage(currentPage);
-        localStorage.setItem("currentPage", currentPage); // Sayfa numarasını sakla
     }
 }
 
-// Sonraki sayfa butonuna tıklanınca çağrılan fonksiyon
-function nextPage() {
-    if (currentPage < totalPages) {
-        currentPage++;
+// Zoom işlemleri
+function changeZoom(direction) {
+    const newScale = scale + direction * zoomStep;
+    if (newScale >= minScale && newScale <= maxScale) {
+        scale = newScale;
+        localStorage.setItem("scale", scale);
         renderPage(currentPage);
-        localStorage.setItem("currentPage", currentPage); // Sayfa numarasını sakla
     }
 }
 
-// Zoom In (Yakınlaştırma) fonksiyonu
-function zoomIn() {
-    if (scale < maxScale) {
-        scale += zoomStep; // Zoom seviyesi artırılıyor
-        localStorage.setItem("scale", scale); // Zoom seviyesini sakla
-        renderPage(currentPage); // Mevcut sayfayı yeniden çiz
-    }
-}
-
-// Zoom Out (Uzaklaştırma) fonksiyonu
-function zoomOut() {
-    if (scale > minScale) { // Minimum zoom seviyesi
-        scale -= zoomStep; // Zoom seviyesi azaltılıyor
-        localStorage.setItem("scale", scale); // Zoom seviyesini sakla
-        renderPage(currentPage); // Mevcut sayfayı yeniden çiz
-    }
-}
-
-// Butonlara tıklama olaylarını ekliyoruz
-document.getElementById('next').addEventListener('click', nextPage);
-document.getElementById('prev').addEventListener('click', prevPage);
-document.getElementById('zoom-in').addEventListener('click', zoomIn);
-document.getElementById('zoom-out').addEventListener('click', zoomOut);
-
-// Sayfaya gitme işlevi (Girilen sayfaya +1 eklenerek işlem yapılır)
+// Buton event'leri
+document.getElementById('next').addEventListener('click', () => changePage(1));
+document.getElementById('prev').addEventListener('click', () => changePage(-1));
+document.getElementById('zoom-in').addEventListener('click', () => changeZoom(1));
+document.getElementById('zoom-out').addEventListener('click', () => changeZoom(-1));
 document.getElementById('go-to-page').addEventListener('click', goToPage);
-document.getElementById('page-number').addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') { // ENTER tuşuna basıldığında
-        goToPage(); // Sayfaya gitme fonksiyonunu çalıştır
-    }
-});
+document.getElementById('page-number').addEventListener('keydown', event => { if (event.key === 'Enter') goToPage(); });
