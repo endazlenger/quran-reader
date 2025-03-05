@@ -79,3 +79,5 @@ document.getElementById('zoom-in').addEventListener('click', () => changeZoom(1)
 document.getElementById('zoom-out').addEventListener('click', () => changeZoom(-1));
 document.getElementById('go-to-page').addEventListener('click', goToPage);
 document.getElementById('page-number').addEventListener('keydown', event => { if (event.key === 'Enter') goToPage(); });
+document.getElementById('next-bottom').addEventListener('click', () => changePage(1));
+document.getElementById('prev-bottom').addEventListener('click', () => changePage(-1));
