@@ -112,6 +112,3 @@ body {
     transition: transform 0.3s ease;
 }
 
-#pdf-viewer:hover {
-    transform: scale(1.01);
-}
