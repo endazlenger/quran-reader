@@ -112,3 +112,7 @@ body {
     transition: transform 0.3s ease;
 }
 
+.bottom-controls {
+    margin-top: 20px;
+}
+
