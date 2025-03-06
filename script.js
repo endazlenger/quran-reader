@@ -14,7 +14,7 @@ pdfjsLib.getDocument(url).promise.then(pdf => {
 
 // Sayfayı render etme
 function renderPage(pageNum) {
-    pdfDoc.getPage(pageNum + 1).then(page => { // PDF.js sayfa numaralandırması 1'den başlıyor
+    pdfDoc.getPage(pageNum + 1).then(page => {
         const viewport = page.getViewport({ scale });
         const canvas = document.getElementById('pdf-viewer');
         const context = canvas.getContext('2d');
@@ -25,7 +25,7 @@ function renderPage(pageNum) {
         canvas.style.width = `${viewport.width}px`;
         canvas.style.height = `${viewport.height}px`;
 
-        context.clearRect(0, 0, canvas.width, canvas.height); // Önceki sayfayı temizle
+        context.clearRect(0, 0, canvas.width, canvas.height);
 
         const renderContext = { canvasContext: context, viewport, transform: outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null };
         page.render(renderContext);
@@ -37,7 +37,7 @@ function renderPage(pageNum) {
 // Sayfa durumunu güncelleme
 function updatePageStatus() {
     document.getElementById('page-status').textContent = `Şu anda ${currentPage}. sayfadasınız`;
-    document.getElementById('page-number').value = currentPage; // Sayfa numarasını inputa yansıt
+    document.getElementById('page-number').value = currentPage;
 }
 
 // Sayfaya gitme
@@ -47,6 +47,9 @@ function goToPage() {
         currentPage = pageNumber;
         localStorage.setItem("currentPage", currentPage);
         renderPage(currentPage);
+        
+        // Sayfanın en üstüne kaydır
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
         alert('Geçersiz sayfa numarası!');
     }
@@ -59,6 +62,9 @@ function changePage(direction) {
         currentPage = newPage;
         localStorage.setItem("currentPage", currentPage);
         renderPage(currentPage);
+
+        // Sayfanın en üstüne kaydır
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
 
@@ -79,5 +85,7 @@ document.getElementById('zoom-in').addEventListener('click', () => changeZoom(1)
 document.getElementById('zoom-out').addEventListener('click', () => changeZoom(-1));
 document.getElementById('go-to-page').addEventListener('click', goToPage);
 document.getElementById('page-number').addEventListener('keydown', event => { if (event.key === 'Enter') goToPage(); });
+
+// Alt butonlara da event ekleme
 document.getElementById('next-bottom').addEventListener('click', () => changePage(1));
 document.getElementById('prev-bottom').addEventListener('click', () => changePage(-1));
